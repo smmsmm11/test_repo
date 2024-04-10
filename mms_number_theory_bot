@@ -1,0 +1,188 @@
+#!/usr/bin/env python
+
+# pylint: disable=unused-argument
+
+# This program is dedicated to the public domain under the CC0 license.
+
+
+"""
+
+Simple Bot to talk about Number Theory.
+
+
+First, a few handler functions are defined. Then, those functions are passed to
+
+the Application and registered at their respective places.
+
+Then, the bot is started and runs until we press Ctrl-C on the command line.
+
+
+Usage:
+
+/NymberTheory - краткий рассказ о теории чисел
+/PrimeTwins - проблема просты-близнецов
+/GoldbachProblemTheorem - проблема Гольдбаха
+/WaringTheorem - теорема Варинга
+/FermatLastTheorem - знаменитая последняя (великая) теорема Ферма
+/RiemannHypothesis - гипотеза Римана (совсем вкратце)
+/ABCConjecture - abc-гипотеза
+/help - немного хулиганства
+
+В остальном работает как эхо, повторяя вводимое
+
+Press Ctrl-C on the command line or send a signal to the process to stop the
+
+bot.
+
+"""
+
+
+import logging
+
+import os
+
+from telegram import ForceReply, Update
+
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+
+os.environ["TELEGRAM_BOT_TOKEN"] = "7157468999:AAFDhZDs1qRrB6hIJ-Hcy8gpUiTogGPBVUE"
+
+token = os.getenv('TELEGRAM_BOT_TOKEN')
+
+# Enable logging
+
+logging.basicConfig(
+
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+
+)
+
+# set higher logging level for httpx to avoid all GET and POST requests being logged
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+
+logger = logging.getLogger(__name__)
+
+
+
+# Define a few command handlers. These usually take the two arguments update and
+
+# context.
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /start is issued."""
+
+    user = update.effective_user
+
+    await update.message.reply_html(
+
+        rf"Hi {user.mention_html()}!",
+
+        reply_markup=ForceReply(selective=True),
+
+    )
+
+
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /help is issued."""
+
+    await update.message.reply_text("Не дождешься!")
+
+
+
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Echo the user message."""
+
+    await update.message.reply_text(update.message.text)
+
+
+async def NumberTheory_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /NumberTheory is issued."""
+
+    await update.message.reply_text("Раздел математики, занимающийся проблемами и гипотезами, связанными со свойствами чисел")
+
+async def PrimeTwins_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /PrimeTwins is issued."""
+
+    await update.message.reply_text("Гипотеза о том, что существует бесконечно много простых p, таких, что p+2 - тоже простое. Доказана в ослабленном виде")
+
+async def GoldbachProblemTheorem_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /GoldbachProblemTheorem is issued."""
+
+    await update.message.reply_text("Бинарная: каждое четное число есть сумма двух простых. Тернарная: каждое нечетное - трех. Доказано лишь второе утверждение")
+
+async def WaringTheorem_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /WaringTheorem is issued."""
+
+    await update.message.reply_text("Для любого натурального k существвует число G(k) такое, что любое натуральное n есть сумма не более, чем G(k) k-х степеней натуральных чисел")
+
+async def FermatLastTheorem_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /FermatLastTheorem is issued."""
+
+    await update.message.reply_text("Знаменитое утверждение П. Ферма, о том, что сумма двух n-х степеней натуральных чисел не может быть n-й степенью натурального числа при натуральном n > 2. Доказано недавно, доказательство - крайне сложное")
+ 
+async def RiemannHypothesis_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /RiemannHypothesis is issued."""
+
+    await update.message.reply_text("Гипотеза о том, что все т. н. нетривиальные нули дзета-функции Римана имеют вещественную часть, равную 1/2. Не доказана")
+
+async def ABCConjecture_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    """Send a message when the command /ABCConjecture is issued."""
+
+    await update.message.reply_text("Предполагаемая оценка максимума натуральных взаимно простых a, b, c, таких что a + b = c, через их радикал. Не доказана, несмотря на утверждение обратного")
+
+def main() -> None:
+
+    """Start the bot."""
+
+    # Create the Application and pass it your bot's token.
+
+    application = Application.builder().token(token).build()
+
+
+    # on different commands - answer in Telegram
+
+    application.add_handler(CommandHandler("start", start))
+
+    application.add_handler(CommandHandler("help", help_command))
+
+    application.add_handler(CommandHandler("NumberTheory", NumberTheory_command))
+
+    application.add_handler(CommandHandler("PrimeTwins", PrimeTwins_command))
+
+    application.add_handler(CommandHandler("GoldbachProblemTheorem", GoldbachProblemTheorem_command))
+
+    application.add_handler(CommandHandler("WaringTheorem", WaringTheorem_command))
+
+    application.add_handler(CommandHandler("FermatLastTheorem", FermatLastTheorem_command))
+
+    application.add_handler(CommandHandler("RiemannHypothesis", RiemannHypothesis_command))
+
+    application.add_handler(CommandHandler("ABCConjecture", ABCConjecture_command))
+
+    # on non command i.e message - echo the message on Telegram
+
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+
+    # Run the bot until the user presses Ctrl-C
+
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+
+
+if __name__ == "__main__":
+
+    main()
